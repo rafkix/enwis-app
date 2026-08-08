@@ -65,11 +65,13 @@ export const authService = {
     api.post<TokenResponse>("/auth/register/verify", { phone, code }),
 
   // ── Social Login (no session required) ─────────────────────────
-  googleLogin: (id_token: string) =>
-    api.post<TokenResponse>("/auth/google", {
+  googleLogin: async (id_token: string) => {
+    const tokens = await api.post<TokenResponse>("/auth/google", {
       provider: "google",
       id_token,
-    }),
+    });
+    return tokens;
+  },
 
   telegramLogin: (telegram_data: TelegramAuthPayload) =>
     api.post<TokenResponse>("/auth/telegram", {

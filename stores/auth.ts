@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, clearAuthTokens, setAuthTokens } from "@/lib/api";
 import { userService } from "@/services/user.service";
 import type { ApiResponse, MeResponse } from "@/lib/types";
 
@@ -82,14 +82,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   registerVerify: async (phone: string, code: string) => {
-    await api.post("/auth/register/verify", { phone, code });
+    const tokens = await api.post<import("@/lib/types").TokenResponse>("/auth/register/verify", { phone, code });
+    setAuthTokens(tokens);
     const wrapped = await api.get<ApiResponse<MeResponse>>("/users/me");
     const res = wrapped.data;
     set({ user: res, isAuthenticated: true, role: mapRole(res.roles ?? []) });
   },
 
   login: async (identifier: string, password: string) => {
-    await api.post("/auth/login", { username: identifier, password });
+    const tokens = await api.post<import("@/lib/types").TokenResponse>("/auth/login", { username: identifier, password });
+    setAuthTokens(tokens);
     const wrapped = await api.get<ApiResponse<MeResponse>>("/users/me");
     const res = wrapped.data;
     set({ user: res, isAuthenticated: true, role: mapRole(res.roles ?? []) });
@@ -101,7 +103,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return false;
     }
     try {
-      await api.post("/auth/telegram/webapp", { init_data: initData });
+      const tokens = await api.post<import("@/lib/types").TokenResponse>("/auth/telegram/webapp", { init_data: initData });
+      setAuthTokens(tokens);
       const wrapped = await api.get<ApiResponse<MeResponse>>("/users/me");
       let res = wrapped.data;
 
@@ -145,6 +148,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       await api.post("/auth/logout", {});
     } finally {
+      clearAuthTokens();
       set({ user: null, isAuthenticated: false, role: "user" });
     }
   },
