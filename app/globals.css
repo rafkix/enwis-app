@@ -228,10 +228,131 @@
     max-width: 100vw;
   }
 
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
+    font-weight: 600;
     letter-spacing: -0.02em;
     color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.08;
+  }
+
+  h2 {
+    font-size: clamp(1.625rem, 3vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    line-height: 1.25;
+  }
+
+  h4, h5, h6 {
+    line-height: 1.3;
+  }
+
+  p {
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+  }
+
+  a {
+    color: var(--color-deep);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
+  }
+
+  a:hover {
+    color: var(--color-deep-800);
+    text-decoration-color: var(--color-volt);
+  }
+
+  ul, ol {
+    padding-inline-start: 1.5rem;
+    color: var(--color-ink-soft);
+  }
+
+  ul { list-style-type: disc; }
+  ol { list-style-type: decimal; }
+
+  li::marker {
+    color: var(--color-volt);
+  }
+
+  blockquote {
+    margin-block: 1.5rem;
+    border-inline-start: 3px solid var(--color-volt);
+    padding-inline-start: 1rem;
+    color: var(--color-slate);
+    font-style: italic;
+  }
+
+  code, kbd, pre {
+    font-family: var(--font-mono);
+  }
+
+  code {
+    border-radius: 0.375rem;
+    background: var(--color-mist);
+    padding: 0.125rem 0.375rem;
+    color: var(--color-deep-900);
+    font-size: 0.875em;
+  }
+
+  pre {
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background: var(--color-ink);
+    padding: 1rem;
+    color: var(--color-off-white);
+    line-height: 1.6;
+  }
+
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-line);
+    margin-block: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: start;
+  }
+
+  th {
+    background: var(--color-mist);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-align: inherit;
+  }
+
+  th, td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.75rem 1rem;
+    vertical-align: top;
+  }
+
+  input, textarea, select {
+    font: inherit;
+    color: var(--color-ink);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--color-slate-light);
   }
 
   ::selection {

@@ -78,7 +78,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sora.variable} ${inter.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${sora.variable} ${inter.variable} ${plexMono.variable} h-full bg-canvas antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Script
