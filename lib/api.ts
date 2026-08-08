@@ -99,6 +99,7 @@ async function request<T>(path: string, options: ApiOptions = {}): Promise<T> {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           ...headers,
         },
         body: body ? JSON.stringify(body) : undefined,
@@ -125,15 +126,17 @@ async function requestBlob(path: string): Promise<Blob> {
   let res = await fetch(`${API_BASE}${urlPath}`, {
     method: "GET",
     credentials: "include",
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
   });
 
   if (res.status === 401 && !path.includes("/auth/")) {
     const refreshed = await tryRefreshToken();
     if (refreshed) {
-      res = await fetch(`${API_BASE}${urlPath}`, {
-        method: "GET",
-        credentials: "include",
-      });
+        res = await fetch(`${API_BASE}${urlPath}`, {
+          method: "GET",
+          credentials: "include",
+          headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+        });
     }
   }
 
@@ -151,6 +154,7 @@ async function requestFormData<T>(path: string, formData: FormData, method = "PA
   let res = await fetch(`${API_BASE}${urlPath}`, {
     method,
     credentials: "include",
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
     body: formData,
   });
 
@@ -158,10 +162,11 @@ async function requestFormData<T>(path: string, formData: FormData, method = "PA
     const refreshed = await tryRefreshToken();
     if (refreshed) {
       res = await fetch(`${API_BASE}${urlPath}`, {
-        method,
-        credentials: "include",
-        body: formData,
-      });
+          method,
+          credentials: "include",
+          headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+          body: formData,
+        });
     }
   }
 
