@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { setAuthTokens } from "@/lib/api";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth";
 import type { TelegramAuthPayload } from "@/lib/types";
@@ -28,7 +29,8 @@ export function TelegramLoginButton({ onError, children }: Props) {
   useEffect(() => {
     window.onTelegramAuth = async (userData: TelegramAuthPayload) => {
       try {
-        await authService.telegramLogin(userData);
+        const tokens = await authService.telegramLogin(userData);
+        setAuthTokens(tokens);
         await useAuthStore.getState().fetchMe();
         if (useAuthStore.getState().role === "admin") {
           await useAuthStore.getState().logout();

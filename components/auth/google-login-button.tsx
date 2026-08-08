@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { setAuthTokens } from "@/lib/api";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth";
 
@@ -42,7 +43,8 @@ export function GoogleLoginButton({ onError, children }: Props) {
 
     cbRef.current = async (credential: string) => {
       try {
-        await authService.googleLogin(credential);
+        const tokens = await authService.googleLogin(credential);
+        setAuthTokens(tokens);
         await useAuthStore.getState().fetchMe();
         if (useAuthStore.getState().role === "admin") {
           await useAuthStore.getState().logout();

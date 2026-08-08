@@ -27,6 +27,19 @@ export class ApiError extends Error {
   }
 }
 
+let accessToken: string | null = null;
+let refreshToken: string | null = null;
+
+export function setAuthTokens(tokens: { access_token: string; refresh_token?: string }) {
+  accessToken = tokens.access_token;
+  refreshToken = tokens.refresh_token ?? null;
+}
+
+export function clearAuthTokens() {
+  accessToken = null;
+  refreshToken = null;
+}
+
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
 
@@ -49,7 +62,7 @@ async function tryRefreshToken(): Promise<boolean> {
         // the refresh-token cookie, same as authService.refresh() already
         // does implicitly (its `refresh_token` param is undefined here too,
         // which JSON.stringify drops, also producing "{}").
-        body: JSON.stringify({}),
+        body: JSON.stringify(refreshToken ? { refresh_token: refreshToken } : {}),
       });
       return res.ok;
     } catch {
@@ -72,6 +85,7 @@ async function request<T>(path: string, options: ApiOptions = {}): Promise<T> {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...headers,
     },
     body: body ? JSON.stringify(body) : undefined,
@@ -85,6 +99,7 @@ async function request<T>(path: string, options: ApiOptions = {}): Promise<T> {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           ...headers,
         },
         body: body ? JSON.stringify(body) : undefined,
@@ -111,15 +126,17 @@ async function requestBlob(path: string): Promise<Blob> {
   let res = await fetch(`${API_BASE}${urlPath}`, {
     method: "GET",
     credentials: "include",
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
   });
 
   if (res.status === 401 && !path.includes("/auth/")) {
     const refreshed = await tryRefreshToken();
     if (refreshed) {
-      res = await fetch(`${API_BASE}${urlPath}`, {
-        method: "GET",
-        credentials: "include",
-      });
+        res = await fetch(`${API_BASE}${urlPath}`, {
+          method: "GET",
+          credentials: "include",
+          headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+        });
     }
   }
 
@@ -137,6 +154,7 @@ async function requestFormData<T>(path: string, formData: FormData, method = "PA
   let res = await fetch(`${API_BASE}${urlPath}`, {
     method,
     credentials: "include",
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
     body: formData,
   });
 
@@ -144,10 +162,11 @@ async function requestFormData<T>(path: string, formData: FormData, method = "PA
     const refreshed = await tryRefreshToken();
     if (refreshed) {
       res = await fetch(`${API_BASE}${urlPath}`, {
-        method,
-        credentials: "include",
-        body: formData,
-      });
+          method,
+          credentials: "include",
+          headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+          body: formData,
+        });
     }
   }
 
