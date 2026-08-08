@@ -63,43 +63,18 @@ export function TelegramLoginButton({ onError, children }: Props) {
     <button
       type="button"
       onClick={handleClick}
-      style={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 10,
-        border: "1px solid var(--color-line)",
-        borderRadius: "var(--radius-lg)",
-        padding: "12px 13px",
-        fontSize: 13,
-        fontWeight: 600,
-        color: "var(--color-ink)",
-        background: "var(--color-canvas)",
-        cursor: "pointer",
-        minHeight: 44,
-        transition: "border-color .16s, box-shadow .16s, background .16s",
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget;
-          el.style.borderColor = "var(--color-volt)";
-          el.style.boxShadow = "0 0 0 3px color-mix(in srgb, var(--color-volt) 18%, transparent)";
-          el.style.background = "var(--color-canvas)";
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget;
-        el.style.borderColor = "#e4e8f2";
-        el.style.boxShadow = "none";
-        el.style.background = "#f7f8fd";
-      }}
+      aria-label="Telegram orqali kirish"
+      className="group flex min-h-11 w-full cursor-pointer items-center justify-center gap-2.5 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-white px-4 py-3 text-[13px] font-semibold text-[var(--color-ink)] shadow-[0_1px_2px_rgba(12,20,34,0.05)] transition-all duration-200 hover:-translate-y-px hover:border-[#26A5E4]/40 hover:bg-[var(--color-mist)] hover:shadow-[0_4px_12px_rgba(38,165,228,0.15)] active:translate-y-0 active:shadow-none"
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.48.7-.96.44l-2.64-1.95-1.28 1.23c-.14.14-.26.26-.54.26l.19-2.7 4.93-4.46c.21-.19-.05-.29-.33-.1L7.9 14.4l-2.59-.81c-.56-.18-.57-.56.12-.83l10.12-3.9c.47-.17.88.11.73.83l-.64-.89z"
-          fill="#26A5E4"
-        />
-      </svg>
-      {children || "Telegram orqali kirish"}
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-mist)] transition-colors group-hover:bg-white">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.48.7-.96.44l-2.64-1.95-1.28 1.23c-.14.14-.26.26-.54.26l.19-2.7 4.93-4.46c.21-.19-.05-.29-.33-.1L7.9 14.4l-2.59-.81c-.56-.18-.57-.56.12-.83l10.12-3.9c.47-.17.88.11.73.83l-.64-.89z"
+            fill="#26A5E4"
+          />
+        </svg>
+      </span>
+      {children || "Telegram"}
     </button>
   );
 }

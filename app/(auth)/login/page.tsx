@@ -13,6 +13,7 @@ import { Logo } from "@/components/ui/logo";
 import { useAuthStore } from "@/stores/auth";
 import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import { TelegramLoginButton } from "@/components/auth/telegram-login-button";
+import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
 import { ApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -115,42 +116,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-2">
-      {/* Left — brand panel (hidden on mobile) */}
-      <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[var(--color-deep)] p-12">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 -right-24 h-[480px] w-[480px] rounded-full bg-[var(--color-volt)]/15 blur-[120px]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[-10%] left-[-10%] h-[380px] w-[380px] rounded-full bg-[var(--color-volt)]/10 blur-[100px]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_30%_20%,black,transparent)] bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:64px_64px]"
-        />
-
-        <div className="relative z-10">
-          <Logo dark />
-        </div>
-
-        <div className="relative z-10 max-w-md">
-          <h2 className="font-[var(--font-display)] text-[clamp(1.75rem,3vw,2.5rem)] font-medium leading-tight text-white">
-            Testlaringizni yarating, kuzating, tahlil qiling.
-          </h2>
-          <p className="mt-4 text-sm text-white/60 leading-relaxed">
-            Enwis bilan savol banklarini boshqaring, imtihonlarni
-            rejalashtiring va o&apos;quvchilar natijalarini bir joyda
-            ko&apos;ring.
-          </p>
-        </div>
-
-        <p className="relative z-10 text-xs text-white/40">
-          © {new Date().getFullYear()} Enwis. Barcha huquqlar himoyalangan.
-        </p>
-      </div>
-
-      {/* Right — login form (unchanged light design) */}
+      {/* Left — login form */}
       <div className="relative flex min-h-screen items-center justify-center bg-[var(--color-mist)] px-4 py-12 lg:min-h-0 overflow-hidden">
         {/* Ambient layered background — only needed on mobile now that the
             left panel carries the brand visual on desktop. */}
@@ -309,13 +275,19 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <GoogleLoginButton />
               <TelegramLoginButton />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Right — brand panel (hidden on mobile) */}
+      <AuthBrandPanel
+        title="Testlaringizni yarating, kuzating, tahlil qiling."
+        description="Enwis bilan savol banklarini boshqaring, imtihonlarni rejalashtiring va o'quvchilar natijalarini bir joyda ko'ring."
+      />
     </div>
   );
 }
