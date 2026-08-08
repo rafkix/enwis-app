@@ -18,6 +18,9 @@ import { Input } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/otp-input";
 import { Logo } from "@/components/ui/logo";
 import { useAuthStore } from "@/stores/auth";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
+import { TelegramLoginButton } from "@/components/auth/telegram-login-button";
+import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
 import { ApiError } from "@/lib/api";
 
 // Real backend flow (doc section 2.1): full_name + phone + password are
@@ -124,27 +127,32 @@ export default function RegisterPage() {
   const steps = ["details", "otp"] as Step[];
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[var(--color-mist)] px-4 overflow-hidden">
-      {/* Ambient layered background */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 right-[-10%] h-[560px] w-[560px] rounded-full bg-[var(--color-volt)]/15 blur-[120px]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-40 left-[-15%] h-[420px] w-[420px] rounded-full bg-[var(--color-deep)]/10 blur-[100px]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)] bg-[linear-gradient(var(--color-line)_1px,transparent_1px),linear-gradient(90deg,var(--color-line)_1px,transparent_1px)] bg-[size:64px_64px] opacity-40"
+    <div className="min-h-screen lg:grid lg:grid-cols-2">
+      {/* Left — brand panel (hidden on mobile) */}
+      <AuthBrandPanel
+        title="Bir necha daqiqada hisobingizni yarating."
+        description="Ro'yxatdan o'ting va Enwis bilan testlar tuzing, imtihonlar o'tkazing hamda natijalarni real vaqtda kuzating."
       />
 
-      <div className="relative z-10 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex justify-center">
-            <Logo />
+      {/* Right — register form */}
+      <div className="relative flex min-h-screen items-center justify-center bg-[var(--color-mist)] px-4 py-12 lg:min-h-0 overflow-hidden">
+        {/* Ambient layered background — only needed on mobile now that the
+            left panel carries the brand visual on desktop. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-40 right-[-10%] h-[560px] w-[560px] rounded-full bg-[var(--color-volt)]/15 blur-[120px] lg:hidden"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-40 left-[-15%] h-[420px] w-[420px] rounded-full bg-[var(--color-deep)]/10 blur-[100px] lg:hidden"
+        />
+
+        <div className="relative z-10 w-full max-w-md">
+          <div className="text-center mb-8 lg:hidden">
+            <div className="inline-flex justify-center">
+              <Logo />
+            </div>
           </div>
-        </div>
 
         <div className="rounded-[var(--radius-2xl)] border border-[var(--color-line)] bg-white p-8 shadow-[var(--shadow-soft-md)]">
           {error && (
@@ -291,6 +299,22 @@ export default function RegisterPage() {
                 </Button>
               </div>
 
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-[var(--color-line)]" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-3 text-[var(--color-slate-light)]">
+                    Yoki davom eting
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <GoogleLoginButton onError={setError} />
+                <TelegramLoginButton onError={setError} />
+              </div>
+
               <div className="mt-6 text-center">
                 <p className="text-sm text-[var(--color-slate)]">
                   Hisobingiz bormi?{" "}
@@ -393,6 +417,7 @@ export default function RegisterPage() {
               </p>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>
