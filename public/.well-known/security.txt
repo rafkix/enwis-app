@@ -1,0 +1,3 @@
+Contact: mailto:security@enwis.uz
+Expires: 2027-07-27T00:00:00.000Z
+Preferred-Languages: uz, ru, en

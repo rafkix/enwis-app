@@ -1,0 +1,438 @@
+@import "tailwindcss";
+
+/* Telegram Mini App integration: falls back to plain 100dvh for normal
+   browsers. TelegramWebAppAdapter overwrites this at runtime with
+   tg.viewportStableHeight when running inside Telegram. */
+:root {
+  --tg-viewport-height: 100dvh;
+}
+
+.min-h-tg-screen {
+  min-height: var(--tg-viewport-height);
+}
+
+.in-telegram {
+  /* With requestFullscreen() Telegram's own chrome no longer reserves
+     top space for us, so — unlike before — we now also respect the
+     top inset (status bar / Telegram's floating close button) that
+     TelegramWebAppAdapter reports via --tg-safe-top. */
+  --tg-safe-bottom: env(safe-area-inset-bottom, 0px);
+  overscroll-behavior-y: none;
+}
+
+/* Fullscreen Mini App: push the sticky topbar and any fixed dropdowns
+   below the top inset so they don't sit under Telegram's own overlay
+   controls, and keep the bottom nav clear of the home-indicator. */
+.in-telegram header.sticky.top-0 {
+  padding-top: var(--tg-safe-top, 0px);
+  height: calc(72px + var(--tg-safe-top, 0px));
+}
+
+.in-telegram [class*="top-[72px]"] {
+  top: calc(72px + var(--tg-safe-top, 0px)) !important;
+}
+
+/* Mini App buttons/dialogs read best "wide" — full-width tap targets,
+   not centered desktop-style pill buttons with side padding — so modal
+   and confirm-dialog action rows stretch and stack in Telegram.
+   (data-modal-footer is set on ModalFooter / the confirm dialog's
+   action row in components/ui/modal.tsx.) */
+.in-telegram [data-modal-footer] {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+.in-telegram [data-modal-footer] > button,
+.in-telegram [data-modal-footer] > a {
+  width: 100%;
+}
+
+/* Same treatment on narrow mobile browsers (outside Telegram): two
+   side-by-side action buttons in a modal footer are a common overflow
+   source at 320-375px, so stack them full-width there too. */
+@media (max-width: 480px) {
+  [data-modal-footer] {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  [data-modal-footer] > button,
+  [data-modal-footer] > a {
+    width: 100%;
+  }
+
+  /* Buttons default to whitespace-nowrap (components/ui/button.tsx) so
+     short labels never wrap mid-word on desktop. At phone widths a long
+     label (translated strings run longer in Uzbek/Russian than English)
+     can be wider than the button's container — let it wrap instead of
+     spilling past the edge. Icon-only buttons have no visible text, so
+     this is a no-op for them. */
+  button {
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+/* ==========================================================================
+   ENWIS DESIGN SYSTEM
+   Signature: the three-pill mark from the logo, repeated as a structural
+   device (eyebrows, step markers, toggles, tags) instead of decoration.
+   ========================================================================== */
+
+@theme {
+  /* ---- Color: named brand tokens (teal + accent yellow palette) ---- */
+  --color-canvas: #f6faf9;
+  --color-ink: #102a2a;
+  --color-ink-soft: #1e3a3a;
+  --color-slate: #5f7373;
+  --color-slate-light: #8fa3a1;
+  --color-mist: #eaf4f2;
+  --color-line: #d9e8e6;
+  --color-off-white: #f4fcfb;
+
+  --color-deep: #026b66;
+  --color-deep-800: #015955;
+  --color-deep-900: #013d3a;
+
+  --color-volt: #018e8a;
+  --color-volt-light: #00aeaa;
+  --color-volt-dim: #bfe9e7;
+
+  --color-accent: #ffd21c;
+  --color-accent-soft: #fff6d6;
+
+  --color-danger: #d64545;
+  --color-danger-light: #fbecec;
+
+  --color-success: #159a72;
+  --color-success-light: #e3f5ee;
+  --color-warning: #d99a00;
+  --color-warning-light: #fff4d9;
+  --color-info: #2188c7;
+  --color-info-light: #e6f2fa;
+
+  /* ---- Radius: pill-forward system ---- */
+  --radius-pill: 999px;
+  --radius-2xl: 2rem;
+  --radius-xl: 1.5rem;
+  --radius-lg: 1rem;
+
+  /* ---- Fonts ---- */
+  --font-display: var(--font-sora), "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  /* ---- Shadows: soft, layered, never harsh ---- */
+  --shadow-soft-sm: 0 2px 8px -2px rgb(17 24 39 / 0.06), 0 1px 2px -1px rgb(17 24 39 / 0.04);
+  --shadow-soft-md: 0 12px 32px -8px rgb(17 24 39 / 0.10), 0 4px 12px -4px rgb(17 24 39 / 0.06);
+  --shadow-soft-lg: 0 24px 64px -12px rgb(17 24 39 / 0.16), 0 8px 24px -8px rgb(17 24 39 / 0.08);
+  --shadow-volt-glow: 0 16px 48px -12px rgb(1 142 138 / 0.35);
+
+  /* ---- Easing ---- */
+  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---- Accordion animation (Radix data-state driven) ---- */
+  --animate-accordion-down: accordion-down 0.3s var(--ease-editorial);
+  --animate-accordion-up: accordion-up 0.3s var(--ease-editorial);
+
+  /* ---- Custom Select: desktop dropdown + mobile bottom sheet ---- */
+  --animate-dropdown-in: dropdown-in 0.15s var(--ease-editorial);
+  --animate-sheet-up: sheet-up 0.3s var(--ease-editorial);
+  --animate-sheet-backdrop: sheet-backdrop 0.2s var(--ease-editorial);
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+@keyframes dropdown-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes sheet-backdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   ADMIN THEME
+   Admin panel is a visually distinct "control room" surface — deep indigo
+   instead of the product's deep-green/volt palette — so it reads at a
+   glance as a different, higher-privilege context, not just another page
+   of the same app. Scoped via .admin-theme on a root wrapper (see
+   app/(admin)/layout.tsx); every component below still just reads
+   var(--color-deep) / var(--color-volt) / etc., so nothing in shared UI
+   components (button, badge, modal...) needs to change — only the values
+   these variables resolve to within the wrapper.
+   ========================================================================== */
+.admin-theme {
+  /* Pinned to the pre-rebrand navy/indigo palette: the product-wide
+     rebrand to teal (see @theme above) must NOT leak into the admin
+     "control room" surface. */
+  --color-canvas: #f7f9fc;
+  --color-ink: #172033;
+  --color-ink-soft: #33415c;
+  --color-slate: #66738a;
+  --color-slate-light: #9aa6b8;
+
+  --color-deep: #102a43;
+  --color-deep-800: #173f5f;
+  --color-deep-900: #0b1f33;
+
+  --color-volt: #18a999;
+  --color-volt-light: #43c7b8;
+  --color-volt-dim: #b9eee8;
+
+  --color-mist: #e8f0f6;
+  --color-line: #d5e1eb;
+
+  --color-danger: #d95d68;
+  --color-danger-light: #fbecee;
+
+  --shadow-volt-glow: 0 16px 48px -12px rgb(24 169 153 / 0.3);
+}
+
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Defensive baseline: no single element should ever be able to push
+       the page wider than the viewport, on any of the target
+       breakpoints (320px-1440px). Everything below is already built to
+       stay within its container, but this is the backstop. */
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.08;
+  }
+
+  h2 {
+    font-size: clamp(1.625rem, 3vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    line-height: 1.25;
+  }
+
+  h4, h5, h6 {
+    line-height: 1.3;
+  }
+
+  p {
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+  }
+
+  a {
+    color: var(--color-deep);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
+  }
+
+  a:hover {
+    color: var(--color-deep-800);
+    text-decoration-color: var(--color-volt);
+  }
+
+  ul, ol {
+    padding-inline-start: 1.5rem;
+    color: var(--color-ink-soft);
+  }
+
+  ul { list-style-type: disc; }
+  ol { list-style-type: decimal; }
+
+  li::marker {
+    color: var(--color-volt);
+  }
+
+  blockquote {
+    margin-block: 1.5rem;
+    border-inline-start: 3px solid var(--color-volt);
+    padding-inline-start: 1rem;
+    color: var(--color-slate);
+    font-style: italic;
+  }
+
+  code, kbd, pre {
+    font-family: var(--font-mono);
+  }
+
+  code {
+    border-radius: 0.375rem;
+    background: var(--color-mist);
+    padding: 0.125rem 0.375rem;
+    color: var(--color-deep-900);
+    font-size: 0.875em;
+  }
+
+  pre {
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background: var(--color-ink);
+    padding: 1rem;
+    color: var(--color-off-white);
+    line-height: 1.6;
+  }
+
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-line);
+    margin-block: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: start;
+  }
+
+  th {
+    background: var(--color-mist);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-align: inherit;
+  }
+
+  th, td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.75rem 1rem;
+    vertical-align: top;
+  }
+
+  input, textarea, select {
+    font: inherit;
+    color: var(--color-ink);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--color-slate-light);
+  }
+
+  ::selection {
+    background: var(--color-volt);
+    color: #ffffff;
+  }
+
+  ::placeholder {
+    color: var(--color-slate-light);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-volt);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  .pill-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.875rem 0.375rem 0.625rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-mist);
+    border: 1px solid var(--color-line);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-deep);
+  }
+
+  .section-pad {
+    padding-top: clamp(4.5rem, 8vw, 8rem);
+    padding-bottom: clamp(4.5rem, 8vw, 8rem);
+  }
+
+  .container-editorial {
+    width: 100%;
+    max-width: 84rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  .app-surface {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-soft-sm);
+  }
+
+  .app-page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .app-page-header h1 {
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-weight: 700;
+  }
+
+  /* Brand hero surface: layered teal radial gradient (spec palette). */
+  .hero-gradient {
+    background:
+      radial-gradient(circle at 60% 40%, #00aeaa 0%, #018e8a 45%, #026b66 100%);
+    color: #ffffff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
